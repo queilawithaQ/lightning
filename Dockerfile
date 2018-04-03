@@ -30,14 +30,14 @@ ENV LITECOIN_PGP_KEY FE3348877809386C
 
 # install litecoin binaries
 RUN mkdir /opt/litecoin && cd /opt/litecoin \
-	&& wget -qO litecoin.tar.gz "$LITECOIN_URL" \
-	&& echo "$LITECOIN_SHA256 litecoin.tar.gz" | sha256sum -c - \
-	&& gpg --keyserver keyserver.ubuntu.com --recv-keys "$LITECOIN_PGP_KEY" \
-	&& wget -qO litecoin.asc "$LITECOIN_ASC_URL" \
-	&& gpg --verify litecoin.asc \
+    && wget -qO litecoin.tar.gz "$LITECOIN_URL" \
+    && echo "$LITECOIN_SHA256 litecoin.tar.gz" | sha256sum -c - \
+    && gpg --keyserver keyserver.ubuntu.com --recv-keys "$LITECOIN_PGP_KEY" \
+    && wget -qO litecoin.asc "$LITECOIN_ASC_URL" \
+    && gpg --verify litecoin.asc \
     && BD=litecoin-$LITECOIN_VERSION/bin \
-	&& tar -xzvf litecoin.tar.gz $BD/litecoin-cli --strip-components=1 --exclude=*-qt \
-	&& rm litecoin.tar.gz
+    && tar -xzvf litecoin.tar.gz $BD/litecoin-cli --strip-components=1 --exclude=*-qt \
+    && rm litecoin.tar.gz
 
 FROM ubuntu:16.04
 
