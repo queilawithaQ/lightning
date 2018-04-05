@@ -1,7 +1,7 @@
-FROM ubuntu:16.04 as builder
+FROM debian:stretch-slim as builder
 ENV LIGHTNINGD_VERSION=master
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential git libtool libgmp-dev \
-  libsqlite3-dev python python3 wget
+  libsqlite3-dev python python3 wget gnupg dirmngr
 
 WORKDIR /opt/lightningd
 COPY . .
@@ -39,7 +39,7 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
     && tar -xzvf litecoin.tar.gz $BD/litecoin-cli --strip-components=1 --exclude=*-qt \
     && rm litecoin.tar.gz
 
-FROM ubuntu:16.04
+FROM debian:stretch-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends socat libgmp-dev inotify-tools libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/* 
