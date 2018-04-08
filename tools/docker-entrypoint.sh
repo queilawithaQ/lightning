@@ -46,7 +46,6 @@ if [ "$EXPOSE_TCP" == "true" ]; then
     < <(inotifywait  -e create,open --format '%f' --quiet "$LIGHTNINGD_DATA" --monitor)
     echo "C-Lightning started"
 
-
     socat -d -d "TCP4-listen:$LIGHTNINGD_PORT,fork,reuseaddr" "UNIX-CONNECT:$LIGHTNINGD_DATA/lightning-rpc"
 else
     lightningd
