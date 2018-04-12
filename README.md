@@ -75,6 +75,8 @@ The first docker image is [cdecker/lightningd](https://hub.docker.com/r/cdecker/
 
 The second docker image is [elementsproject/lightning](https://hub.docker.com/r/elementsproject/lightningd/) (from this [Dockerfile](Dockerfile)), it is meant to be used inside docker-compose.
 
+Image tags with `-dev` at the end are images built with `DEVELOPER=1`.
+
 If you build the image yourself, you can use the build arg `DEVELOPER=1` to build cligthning in developer mode.
 
 It has the following environment variable:
