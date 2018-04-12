@@ -75,6 +75,8 @@ The first docker image is [cdecker/lightningd](https://hub.docker.com/r/cdecker/
 
 The second docker image is [elementsproject/lightning](https://hub.docker.com/r/elementsproject/lightningd/) (from this [Dockerfile](Dockerfile)), it is meant to be used inside docker-compose.
 
+If you build the image yourself, you can use the build arg `DEVELOPER=1` to build cligthning in developer mode.
+
 It has the following environment variable:
 
 * `EXPOSE_TCP` default to false, if true, use expose c-lightning on port 9835. (Use this only for testing)
