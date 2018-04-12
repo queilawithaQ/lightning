@@ -5,7 +5,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 WORKDIR /opt/lightningd
 COPY . .
-RUN make && cp lightningd/lightning* cli/lightning-cli /usr/bin/
+
+ARG DEVELOPER=0
+RUN make -j3 DEVELOPER=${DEVELOPER} && cp lightningd/lightning* cli/lightning-cli /usr/bin/
 
 ENV BITCOIN_VERSION 0.16.0
 ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-$BITCOIN_VERSION/bitcoin-$BITCOIN_VERSION-x86_64-linux-gnu.tar.gz
