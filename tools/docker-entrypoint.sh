@@ -38,11 +38,10 @@ if [[ $REPLACEDNETWORK ]]; then
 fi
 
 if [ "$EXPOSE_TCP" == "true" ]; then
-
     lightningd &
 
     echo "C-Lightning starting"
-    while read i; do if [ "$i" = "lightning-rpc" ]; then break; fi; done \
+    while read -r i; do if [ "$i" = "lightning-rpc" ]; then break; fi; done \
     < <(inotifywait  -e create,open --format '%f' --quiet "$LIGHTNINGD_DATA" --monitor)
     echo "C-Lightning started"
 
