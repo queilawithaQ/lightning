@@ -57,5 +57,5 @@ COPY --from=builder /opt/bitcoin/bin /usr/bin
 COPY --from=builder /opt/litecoin/bin /usr/bin
 COPY tools/docker-entrypoint.sh entrypoint.sh
 
-EXPOSE 9112 9735 9835
+EXPOSE 9735 9835
 ENTRYPOINT  [ "./entrypoint.sh" ]
