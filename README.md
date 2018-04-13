@@ -73,16 +73,16 @@ The first docker image is [cdecker/lightningd](https://hub.docker.com/r/cdecker/
     	-p 9735:9735 \
     	cdecker/lightningd:latest
 
-The second docker image is [elementsproject/lightning](https://hub.docker.com/r/elementsproject/lightningd/) (from this [Dockerfile](Dockerfile)), it is meant to be used inside docker-compose.
+The second docker image is [elementsproject/lightningd](https://hub.docker.com/r/elementsproject/lightningd/) (from this [Dockerfile](Dockerfile)), it is meant to be used inside docker-compose.
 
 Image tags with `-dev` at the end are images built with `DEVELOPER=1`.
 
-If you build the image yourself, you can use the build arg `DEVELOPER=1` to build cligthning in developer mode.
+If you build the image yourself, you can use the build arg `DEVELOPER=1` to build c-lightning in developer mode.
 
 It has the following environment variable:
 
 * `EXPOSE_TCP` default to false, if true, use expose c-lightning on port 9835. (Use this only for testing)
-* `LIGHTNINGD_OPT` is the content of the config file of the clightning instance.
+* `LIGHTNINGD_OPT` is the content of the config file of the c-lightning instance.
 
 On top of this, to make configuration easier, if `LIGHTNINGD_OPT` contains the parameter `chain=`, then, the `network=` parameter will be rewritten before starting c-lightning:
 
@@ -115,7 +115,7 @@ version: "3"
     - "litecoin_datadir:/data"
 
   clightning_litecoin:
-    image: elementsproject/lightning
+    image: elementsproject/lightningd
     environment:
       EXPOSE_TCP: "true"
       LIGHTNINGD_OPT: |
