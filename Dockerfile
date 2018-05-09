@@ -18,13 +18,7 @@ RUN apk add --no-cache \
      gnupg \
      swig
 
-ENV LIGHTNINGD_VERSION=master
-
-WORKDIR /opt/lightningd
-COPY . .
-
-ARG DEVELOPER=0
-RUN make -j3 DEVELOPER=${DEVELOPER} && cp lightningd/lightning* cli/lightning-cli /usr/bin/
+WORKDIR /opt
 
 ENV BITCOIN_VERSION 0.16.0
 ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-$BITCOIN_VERSION/bitcoin-$BITCOIN_VERSION-x86_64-linux-gnu.tar.gz
@@ -58,6 +52,14 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
     && BD=litecoin-$LITECOIN_VERSION/bin \
     && tar -xzvf litecoin.tar.gz $BD/litecoin-cli --strip-components=1 --exclude=*-qt \
     && rm litecoin.tar.gz
+
+ENV LIGHTNINGD_VERSION=master
+
+WORKDIR /opt/lightningd
+COPY . .
+
+ARG DEVELOPER=0
+RUN make -j3 DEVELOPER=${DEVELOPER} && cp lightningd/lightning* cli/lightning-cli /usr/bin/
 
 FROM alpine:3.7
 
