@@ -1,7 +1,24 @@
-FROM debian:stretch-slim as builder
+FROM alpine:3.7 as builder
+
+RUN apk add --no-cache \
+     ca-certificates \
+     autoconf \
+     automake \
+     build-base \
+     libressl \
+     libtool \
+     gmp-dev \
+     python \
+     python-dev \
+     python3 \
+     sqlite-dev \
+     wget \
+     git \
+     file \
+     gnupg \
+     swig
+
 ENV LIGHTNINGD_VERSION=master
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential git libtool libgmp-dev \
-  libsqlite3-dev python python3 wget gnupg dirmngr
 
 WORKDIR /opt/lightningd
 COPY . .
@@ -14,9 +31,10 @@ ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-$BITCOIN_VERSION/bitcoi
 ENV BITCOIN_SHA256 e6322c69bcc974a29e6a715e0ecb8799d2d21691d683eeb8fef65fc5f6a66477
 ENV BITCOIN_ASC_URL https://bitcoincore.org/bin/bitcoin-core-$BITCOIN_VERSION/SHA256SUMS.asc
 ENV BITCOIN_PGP_KEY 01EA5486DE18A882D4C2684590C8019E36C2E964
+
 RUN mkdir /opt/bitcoin && cd /opt/bitcoin \
     && wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
-    && echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
+    && echo "$BITCOIN_SHA256  bitcoin.tar.gz" | sha256sum -c - \
     && gpg --keyserver keyserver.ubuntu.com --recv-keys "$BITCOIN_PGP_KEY" \
     && wget -qO bitcoin.asc "$BITCOIN_ASC_URL" \
     && gpg --verify bitcoin.asc \
@@ -33,7 +51,7 @@ ENV LITECOIN_PGP_KEY FE3348877809386C
 # install litecoin binaries
 RUN mkdir /opt/litecoin && cd /opt/litecoin \
     && wget -qO litecoin.tar.gz "$LITECOIN_URL" \
-    && echo "$LITECOIN_SHA256 litecoin.tar.gz" | sha256sum -c - \
+    && echo "$LITECOIN_SHA256  litecoin.tar.gz" | sha256sum -c - \
     && gpg --keyserver keyserver.ubuntu.com --recv-keys "$LITECOIN_PGP_KEY" \
     && wget -qO litecoin.asc "$LITECOIN_ASC_URL" \
     && gpg --verify litecoin.asc \
@@ -41,10 +59,13 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
     && tar -xzvf litecoin.tar.gz $BD/litecoin-cli --strip-components=1 --exclude=*-qt \
     && rm litecoin.tar.gz
 
-FROM debian:stretch-slim
+FROM alpine:3.7
 
-RUN apt-get update && apt-get install -y --no-install-recommends socat libgmp-dev inotify-tools libsqlite3-dev \
-    && rm -rf /var/lib/apt/lists/* 
+RUN apk add --no-cache \
+     gmp-dev \
+     sqlite-dev \
+     inotify-tools \
+     socat
 
 ENV LIGHTNINGD_DATA=/root/.lightning
 ENV LIGHTNINGD_PORT=9835
