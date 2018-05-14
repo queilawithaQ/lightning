@@ -88,6 +88,7 @@ RUN apk add --update curl && \
 
 ENV LIGHTNINGD_DATA=/root/.lightning
 ENV LIGHTNINGD_PORT=9835
+ARG DEVELOPER=0
 
 RUN mkdir $LIGHTNINGD_DATA && \
     touch $LIGHTNINGD_DATA/config
