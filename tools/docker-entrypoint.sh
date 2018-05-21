@@ -31,6 +31,20 @@ if [ "$CHAIN" == "ltc" ]; then
     fi
 fi
 
+if [ $TRACE_TOOLS ]; then
+echo "Trace tools detected, installing sample.sh..."
+echo 0 > /proc/sys/kernel/kptr_restrict
+echo "
+LIGHTNING_PROCESSES=\$(pidof lightningd lightning_chann lightning_closi lightning_gossi lightning_hsmd lightning_oncha lightning_openi lightning_hsmd lightning_gossipd lightning_channeld  | sed -e 's/\s/,/g')
+perf record -F 99 -g -a --pid \$LIGHTNING_PROCESSES -o "$TRACE_LOCATION/perf.data" -- sleep 60
+perf script -i "$TRACE_LOCATION/perf.data" > "$TRACE_LOCATION/output.trace"
+cd /FlameGraph
+./stackcollapse-perf.pl "$TRACE_LOCATION/output.trace" > "$TRACE_LOCATION/output.trace.folded"
+./flamegraph.pl "$TRACE_LOCATION/output.trace.folded" > "$TRACE_LOCATION/output.trace.svg"
+" > /usr/bin/sample.sh
+chmod +x /usr/bin/sample.sh
+fi
+
 if [[ $REPLACEDNETWORK ]]; then
     sed -i '/^network=/d' "$LIGHTNINGD_DATA/config"
     echo "network=$REPLACEDNETWORK" >> "$LIGHTNINGD_DATA/config"
