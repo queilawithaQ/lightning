@@ -10,8 +10,14 @@ EOF
 
 NETWORK=$(sed -n 's/^network=\(.*\)$/\1/p' < "$LIGHTNINGD_DATA/config")
 CHAIN=$(sed -n 's/^chain=\(.*\)$/\1/p' < "$LIGHTNINGD_DATA/config")
-
 sed -i '/^chain=/d' "$LIGHTNINGD_DATA/config"
+
+if [[ ! $LIGHTNINGD_CHAIN ]]; then
+    CHAIN = $LIGHTNINGD_CHAIN
+fi
+if [[ ! $LIGHTNINGD_NETWORK ]]; then
+    NETWORK = $LIGHTNINGD_NETWORK
+fi
 
 REPLACEDNETWORK="";
 if [ "$CHAIN" == "btc" ]; then
@@ -33,7 +39,7 @@ if [ "$CHAIN" == "ltc" ]; then
     fi
 fi
 
-if [[ $LND_EXPLORERURL && $NETWORK && $CHAIN ]]; then
+if [[ $LIGHTNINGD_EXPLORERURL && $NETWORK && $CHAIN ]]; then
     # We need to do that because clightning behave weird if it starts at same time as bitcoin core, or if the node is not synched
     echo "Waiting for the node to start and sync"
     dotnet /opt/NBXplorer.NodeWaiter/NBXplorer.NodeWaiter.dll --chains "$CHAIN" --network "$NETWORK" --explorerurl "$LIGHTNINGD_EXPLORERURL"
