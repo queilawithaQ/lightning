@@ -33,6 +33,13 @@ if [ "$CHAIN" == "ltc" ]; then
     fi
 fi
 
+if [[ $LND_EXPLORERURL && $NETWORK && $CHAIN ]]; then
+    # We need to do that because clightning behave weird if it starts at same time as bitcoin core, or if the node is not synched
+    echo "Waiting for the node to start and sync"
+    dotnet /opt/NBXplorer.NodeWaiter/NBXplorer.NodeWaiter.dll --chains "$CHAIN" --network "$NETWORK" --explorerurl "$LIGHTNINGD_EXPLORERURL"
+    echo "Node synched"
+fi
+
 if [[ $TRACE_TOOLS == "true" ]]; then
 echo "Trace tools detected, installing sample.sh..."
 echo 0 > /proc/sys/kernel/kptr_restrict
