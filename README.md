@@ -138,7 +138,7 @@ Alternatively you can use `LIGHTNINGD_OPT`:
         log-level=debug
 ```
 
-If you use `LIGHTNINGD_OPT`, you can use the special parameter `chain=ltc|btc` so you can switch the network to `litecoin` or `bitcoin` variant without changing the `network=` parameter.
+To select the blockchain you are running LND on, you can alternatively use `LIGHTNINGD_CHAIN` with value `ltc` or `btc` and `LIGHTNINGD_NETWORK` with values `mainnet`, `testnet` or `regtest`).
 
 ### Starting `lightningd`
 
