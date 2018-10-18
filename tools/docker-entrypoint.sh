@@ -13,10 +13,10 @@ CHAIN=$(sed -n 's/^chain=\(.*\)$/\1/p' < "$LIGHTNINGD_DATA/config")
 sed -i '/^chain=/d' "$LIGHTNINGD_DATA/config"
 
 if [[ ! $LIGHTNINGD_CHAIN ]]; then
-    CHAIN = $LIGHTNINGD_CHAIN
+    CHAIN=$LIGHTNINGD_CHAIN
 fi
 if [[ ! $LIGHTNINGD_NETWORK ]]; then
-    NETWORK = $LIGHTNINGD_NETWORK
+    NETWORK=$LIGHTNINGD_NETWORK
 fi
 
 REPLACEDNETWORK="";
