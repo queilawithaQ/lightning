@@ -10,15 +10,11 @@ FROM debian:stretch-slim as downloader
 RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr wget \
-     qemu-user-static binfmt-support
+     qemu qemu-user-static qemu-user binfmt-support
 
 WORKDIR /opt
 
-RUN wget -qO /opt/tini "https://github.com/krallin/tini/releases/download/v0.18.0/tini-armhf" \
-    && echo "01b54b934d5f5deb32aa4eb4b0f71d0e76324f4f0237cc262d59376bf2bdc269 /opt/tini" | sha256sum -c - \
-    && chmod +x /opt/tini
-
-ARG BITCOIN_VERSION=0.18.1
+ARG BITCOIN_VERSION=0.17.0
 ENV BITCOIN_TARBALL bitcoin-$BITCOIN_VERSION-arm-linux-gnueabihf.tar.gz
 ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-$BITCOIN_VERSION/$BITCOIN_TARBALL
 ENV BITCOIN_ASC_URL https://bitcoincore.org/bin/bitcoin-core-$BITCOIN_VERSION/SHA256SUMS.asc
@@ -48,7 +44,7 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
 FROM debian:stretch-slim as builder
 
 ENV LIGHTNINGD_VERSION=master
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential gettext git libtool python python3 python3-mako wget gnupg dirmngr git \
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential git libtool python python3 wget gnupg dirmngr git \
   libc6-armhf-cross gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
 ENV target_host=arm-linux-gnueabihf
@@ -86,30 +82,27 @@ RUN wget -q https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz \
 
 COPY --from=downloader /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 WORKDIR /opt/lightningd
-COPY . /tmp/lightning
-RUN git clone --recursive /tmp/lightning . && \
-    git checkout $(git --work-tree=/tmp/lightning --git-dir=/tmp/lightning/.git rev-parse HEAD)
-
+COPY . .
 ARG DEVELOPER=0
-RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j3 DEVELOPER=${DEVELOPER} && make install
+RUN ./configure --enable-static && make -j3 DEVELOPER=${DEVELOPER} && cp lightningd/lightning* cli/lightning-cli /usr/bin/
 
 FROM arm32v7/debian:stretch-slim as final
 COPY --from=downloader /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
-COPY --from=downloader /opt/tini /usr/bin/tini
 RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools \
     && rm -rf /var/lib/apt/lists/* 
 
 ENV LIGHTNINGD_DATA=/root/.lightning
-ENV LIGHTNINGD_RPC_PORT=9835
-ENV LIGHTNINGD_PORT=9735
+ENV LIGHTNINGD_PORT=9835
 
 RUN mkdir $LIGHTNINGD_DATA && \
     touch $LIGHTNINGD_DATA/config
 VOLUME [ "/root/.lightning" ]
-COPY --from=builder /tmp/lightning_install/ /usr/local/
+
+COPY --from=builder /opt/lightningd/cli/lightning-cli /usr/bin
+COPY --from=builder /opt/lightningd/lightningd/lightning* /usr/bin/
 COPY --from=downloader /opt/bitcoin/bin /usr/bin
 COPY --from=downloader /opt/litecoin/bin /usr/bin
 COPY tools/docker-entrypoint.sh entrypoint.sh
 
 EXPOSE 9735 9835
-ENTRYPOINT  [ "/usr/bin/tini", "-g", "--", "./entrypoint.sh" ]
+ENTRYPOINT  [ "./entrypoint.sh" ]
